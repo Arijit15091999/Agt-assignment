@@ -2,7 +2,7 @@ package Four;
 
 import java.util.*;
 
-public class EdgeDiffDfs {
+public class EdgeDiffForUndirectedGraphs {
     private int dfsTime = 1;
     private int completionTime = 1;
     private final int[] dfsTimeArray;
@@ -11,7 +11,7 @@ public class EdgeDiffDfs {
     private final ArrayList<ArrayList<Integer>> adjList;
     private final int numberOfVertices;
 
-    private Comparator<int[]> edgeComparator = (a, b) -> {
+    private final Comparator<int[]> edgeComparator = (a, b) -> {
         if(a[0] != b[0]) {
             return Integer.compare(a[0], b[0]);
         }
@@ -42,7 +42,7 @@ public class EdgeDiffDfs {
         return forwardEdgeSet;
     }
 
-    public EdgeDiffDfs(int numberOfVertices) {
+    public EdgeDiffForUndirectedGraphs(int numberOfVertices) {
         this.adjList = new ArrayList<>();
         for(int i = 0; i < numberOfVertices; i++) {
             adjList.add(new ArrayList<>());
@@ -78,9 +78,11 @@ public class EdgeDiffDfs {
         dfsCompletionTimeArray[node] = completionTime++;
     }
 
-    public Map<String, Set<int[]>> classifyEdges(int start) {
+    public Map<String, Set<int[]>> classifyEdges() {
         Map<String, Set<int[]>> map = new HashMap<>();
-        dfs(start);
+        for(int start = 0; start < numberOfVertices; start++)
+            if(!visited[start])
+                dfs(start);
 
         map.put("Tree Edge Set", getTreeEdgeSet());
 
