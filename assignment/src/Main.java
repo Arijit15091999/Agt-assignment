@@ -41,22 +41,24 @@ public class Main {
         graph.addEdge(2, 5);
 
         // Start DFS traversal from vertex 0
-        Map<String, Set<Edge>> edgeClassification = graph.classifyEdges(0);
+        Map<String, Set<int[]>> edgeClassification = graph.classifyEdges(0);
 
         // Print out the classified edges
         System.out.println("Tree Edges:");
-        for (Edge edge : edgeClassification.get("Tree Edge Set")) {
-            System.out.println(edge);
+        for (int[] edge : edgeClassification.get("Tree Edge Set")) {
+            System.out.println(Arrays.toString(edge));
         }
 
         System.out.println("\nForward Edges:");
-        for (Edge edge : edgeClassification.get("Forward Edge Set")) {
-            System.out.println(edge);
+        for (int[] edge : edgeClassification.get("Forward Edge Set")) {
+            System.out.println(Arrays.toString(edge));
+
         }
 
         System.out.println("\nBack Edges:");
-        for (Edge edge : edgeClassification.get("Back Edge Set")) {
-            System.out.println(edge);
+        for (int[] edge : edgeClassification.get("Back Edge Set")) {
+            System.out.println(Arrays.toString(edge));
+
         }
     }
 

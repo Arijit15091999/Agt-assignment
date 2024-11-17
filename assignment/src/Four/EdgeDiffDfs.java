@@ -11,27 +11,34 @@ public class EdgeDiffDfs {
     private final ArrayList<ArrayList<Integer>> adjList;
     private final int numberOfVertices;
 
-    private final HashSet<Edge> treeEdgeSet = new HashSet<Edge>();
-    private final HashSet<Edge> forwardEdgeSet = new HashSet<Edge>();
-    private final HashSet<Edge> backEdgeSet = new HashSet<Edge>();
-
-    public HashSet<Edge> getBackEdgeSet() {
-        for(Edge edge : treeEdgeSet) {
-            backEdgeSet.add(edge.reverseEdge());
+    private Comparator<int[]> edgeComparator = (a, b) -> {
+        if(a[0] != b[0]) {
+            return Integer.compare(a[0], b[0]);
         }
 
-        for(Edge edge : forwardEdgeSet) {
-            backEdgeSet.add(edge.reverseEdge());
+        return Integer.compare(a[1], b[1]);
+    };
+
+    private final Set<int[]> treeEdgeSet = new TreeSet<int[]>(edgeComparator);
+    private final Set<int[]> forwardEdgeSet = new TreeSet<int[]>(edgeComparator);
+    private final Set<int[]> backEdgeSet = new TreeSet<int[]>(edgeComparator);
+
+    public Set<int[]> getBackEdgeSet() {
+        for(int[] edge : treeEdgeSet) {
+            backEdgeSet.add(new int[]  {edge[1], edge[0]});
+        }
+        for(int[] edge : forwardEdgeSet) {
+            backEdgeSet.add(new int[]  {edge[1], edge[0]});
         }
 
         return backEdgeSet;
     }
 
-    public HashSet<Edge> getTreeEdgeSet() {
+    public Set<int[]> getTreeEdgeSet() {
         return treeEdgeSet;
     }
 
-    public HashSet<Edge> getForwardEdgeSet() {
+    public Set<int[]> getForwardEdgeSet() {
         return forwardEdgeSet;
     }
 
@@ -63,7 +70,7 @@ public class EdgeDiffDfs {
 
         for(Integer i : adjList.get(node)) {
             if(!visited[i]) {
-                treeEdgeSet.add(new Edge(node, i));
+                treeEdgeSet.add(new int[]{node, i});
                 dfs(i);
             }
         }
@@ -71,32 +78,32 @@ public class EdgeDiffDfs {
         dfsCompletionTimeArray[node] = completionTime++;
     }
 
-    public Map<String, Set<Edge>> classifyEdges(int start) {
-        Arrays.fill(visited, false);
-        Map<String, Set<Edge>> map = new HashMap<>();
+    public Map<String, Set<int[]>> classifyEdges(int start) {
+        Map<String, Set<int[]>> map = new HashMap<>();
         dfs(start);
-        classifyEdgesHelper(start);
 
         map.put("Tree Edge Set", getTreeEdgeSet());
+
+        classifyForwardEdges();
+
         map.put("Forward Edge Set", getForwardEdgeSet());
         map.put("Back Edge Set", getBackEdgeSet());
 
         return map;
     }
 
-    private void classifyEdgesHelper(int node) {
-        if(visited[node]) {
-            return;
-        }
-
-        visited[node] = true;
-
-        for(Integer i : adjList.get(node)) {
-            if(dfsTimeArray[node] < dfsTimeArray[i] && dfsCompletionTimeArray[node] > dfsCompletionTimeArray[i]) {
-                forwardEdgeSet.add(new Edge(node, i));
+    private void classifyForwardEdges() {
+        for(int i = 0; i < this.numberOfVertices; i++) {
+            for(Integer node : adjList.get(i)) {
+                if(
+                        dfsTimeArray[i] < dfsTimeArray[node]
+                        && dfsCompletionTimeArray[i] > dfsCompletionTimeArray[node]
+                ) {
+                    int[] edge = new int[]{i, node};
+                    if(!treeEdgeSet.contains(edge))
+                        forwardEdgeSet.add(edge);
+                }
             }
-            classifyEdgesHelper(i);
         }
-
     }
 }
